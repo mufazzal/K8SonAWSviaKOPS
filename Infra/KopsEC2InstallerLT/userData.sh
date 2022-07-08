@@ -245,6 +245,26 @@ doHPAbadFix() {
     echo "<<====== DONE BAD FIX! BAD fix! BAD fix! for HPA  ======>>"
 }
 
+setUpPrometheousAndGrafana() {
+    echo '<<======  Installing Prometheus and Grafana  ======>>'
+
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo add stable https://charts.helm.sh/stable
+    helm repo update
+    kubectl create ns prometheus
+    helm install prometheus prometheus-community/kube-prometheus-stack -n prometheus
+
+    grafanaPassword=$(kubectl get secret grafana-admin --namespace default -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode)
+    echo $grafanaPassword
+    setEc2Tag "Grafana Cred" "admin | $grafanaPassword"
+
+    # kubectl port-forward --namespace prm svc/prometheus-kube-prometheus-prometheus 8085:9090 --address 0.0.0.0 &
+    # kubectl port-forward --namespace prm svc/prometheus-grafana 8080:80 --address 0.0.0.0 &
+
+    echo '<<======  Done Installing Prometheus and Grafana  ======>>'
+
+}
+
 echo '<<======Starting User data Script userData.sh======>>'
 sudo apt-get update
 sudo apt-get install -y \
@@ -333,6 +353,9 @@ echo 'alias k=kubectl' >>~/.bashrc
 echo 'alias kn=kubens' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
 
+echo 'alias udlog="cat /var/log/cloud-init-output.log"' >>~/.bashrc
+echo 'alias udlogf="tail -f /var/log/cloud-init-output.log"' >>~/.bashrc
+
 echo "<<====== DONE Configuring CLI  ======>>"
 
 
@@ -371,18 +394,21 @@ else
     setProgressInfoTag "ingress-nginx Configured| Configuring ArgoCD"
     process_configure_argoCD_in_cluster
 
-    setProgressInfoTag "Kubernets-dashBoard Configured | Configuring Kubernets-dashBoard"
+    setProgressInfoTag "ArgoCD Configured | Configuring Kubernets-dashBoard"
     process_configure_Kubernets_dashBoard
+
+    setProgressInfoTag "Kubernets-dashBoard Configured | Configuring Prometheus and Grafana"
+    setUpPrometheousAndGrafana
+
     doHPAbadFix
 
     setupCronForDeleteCluster
+    
   
 fi
 
 setProgressInfoTag "none"
 setUDScriptRuningStatusTag "COMPLETED"
-
-alias udlog="tail -f /var/log/cloud-init-output.log"
 
 echo '<<======User data script userData.sh ENDS HERE======>>'
 
