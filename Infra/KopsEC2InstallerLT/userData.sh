@@ -382,6 +382,8 @@ fi
 setProgressInfoTag "none"
 setUDScriptRuningStatusTag "COMPLETED"
 
+alias udlog="tail -f /var/log/cloud-init-output.log"
+
 echo '<<======User data script userData.sh ENDS HERE======>>'
 
 
