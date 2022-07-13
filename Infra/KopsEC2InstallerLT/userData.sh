@@ -254,7 +254,7 @@ setUpPrometheousAndGrafana() {
     kubectl create ns prometheus
     helm install prometheus prometheus-community/kube-prometheus-stack -n prometheus
 
-    grafanaPassword=$(kubectl get secret grafana-admin --namespace default -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode)
+    grafanaPassword=$(kubectl get secret prometheus-grafana --namespace prometheus -o jsonpath="{.data.admin-password}" | base64 --decode)
     echo $grafanaPassword
     setEc2Tag "Grafana Cred" "admin | $grafanaPassword"
 
