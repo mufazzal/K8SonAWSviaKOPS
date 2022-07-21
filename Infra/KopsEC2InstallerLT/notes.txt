@@ -7,6 +7,6 @@
 
 grafana dasboards:
 1. Nginx Ingress controller : 9614, 14314
-2. ArgoCD: 14584
+2. ArgoCD: 14584  -> Not working
 3. AWS: bill>139, ec2>617
 4. k8s: 7249

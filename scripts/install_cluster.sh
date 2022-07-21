@@ -8,6 +8,7 @@ lib_install_cluster() {
     echo "<<====== Creating Cluster  ======>>"
     sudo ssh-keygen -q -t rsa -N '' -m PEM -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
     kops create secret --name $KOPS_CLUSTER_NAME sshpublickey admin -i ~/.ssh/id_rsa.pub
+    chmod 600 ~/.ssh/id_rsa
 
     echo "<<====  Saving Private key in SSM Parameter ====>>"
         keyContent=$(cat '/root/.ssh/id_rsa')
@@ -18,6 +19,7 @@ lib_install_cluster() {
             --overwrite \
             --region "us-east-1" 
     setEc2Tag "SSH_Private_Key_SSMParam" $ssmParamName
+    setEc2Tag "Node Connect Command" "ssh ubuntu@<ip_or_dns> -i ~/.ssh/id_rsa"
     echo "Private key for SSHing in to the nodes is saved in SSM param: $ssmParamName"
     echo "<<====  Done Saving Private key in SSM Parameter ====>>"
 

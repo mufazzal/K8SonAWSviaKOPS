@@ -39,7 +39,7 @@ lib_install_ingressNginx() {
             albDesc=$(echo "$albid" | sed -r 's/\-/\//g')
             while true;
             do
-                elbIP=$(aws ec2 describe-network-interfaces --filters Name=description,Values="ELB net/$albDesc" --query 'NetworkInterfaces[*].Association.PublicIp' --output text --region us-east-1)
+                elbIP=$(aws ec2 describe-network-interfaces --filters Name=description,Values="ELB net/$albDesc" --query 'NetworkInterfaces[0].Association.PublicIp' --output text --region us-east-1)
                 if [[ $elbIP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
                     echo "Load balancer Public IP is: $elbIP"
                     setEc2Tag "LB IP" $elbIP
@@ -56,6 +56,17 @@ lib_install_ingressNginx() {
             echo "Load balancer is still not ready.. retry in 10 seconds"
             sleep 10
         fi
-    done   
+    done 
+
+    echo "<< Enabling Cross-Zone Load balancing >>"  
+    
+    lbarn=$(aws elbv2 describe-load-balancers --region us-east-1 --query 'LoadBalancers[0].LoadBalancerArn' --output text)
+    aws elbv2 modify-load-balancer-attributes \
+        --load-balancer-arn $lbarn \
+        --attributes Key=load_balancing.cross_zone.enabled,Value=true \
+        --region us-east-1
+
+    echo "<< Done Enabling Cross-Zone Load balancing >>"  
+
 
 }
