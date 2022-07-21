@@ -1,0 +1,12 @@
+    # kubectl port-forward --namespace prm svc/prometheus-kube-prometheus-prometheus 8085:9090 --address 0.0.0.0 &
+    # kubectl port-forward --namespace prm svc/prometheus-grafana 8080:80 --address 0.0.0.0 &
+
+
+    
+##1##
+
+grafana dasboards:
+1. Nginx Ingress controller : 9614, 14314
+2. ArgoCD: 14584
+3. AWS: bill>139, ec2>617
+4. k8s: 7249

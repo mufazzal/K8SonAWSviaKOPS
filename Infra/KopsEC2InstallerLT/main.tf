@@ -19,7 +19,9 @@ module "KopsInstallerEC2LT" {
 
   userDataFilePath = "userData.sh"
   userDataParamMap = {
-    vpcId: module.dataMatrix.ds.kopsk8shnNetwork.outputs.vpc_id
+    vpcId: module.dataMatrix.ds.kopsk8shnNetwork.outputs.vpc_id,
+    state_bucket: "s3://muf-k8s-kops-state-bucket",
+    cluster_name: "hn.k8shn.com"
   }  
   update_launch_template_default_version = true
 }
