@@ -1,4 +1,5 @@
 #!/bin/bash
+scriptRoot="https://muf-k8s-kops-work-space-bucket.s3.amazonaws.com/Scripts"
 INSTANCE_ID=$(curl --silent http://169.254.169.254/latest/meta-data/instance-id)
 INSTANCE_IP=$(curl --silent http://169.254.169.254/latest/meta-data/public-ipv4)
 

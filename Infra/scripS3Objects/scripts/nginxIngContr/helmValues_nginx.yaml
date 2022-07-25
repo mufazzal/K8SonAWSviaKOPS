@@ -1,0 +1,15 @@
+controller:
+  # name: nginx-controller
+  # -- Annotations to be added to application controller pods
+  podAnnotations:
+    prometheus.io/scrape: true
+    prometheus.io/port: "10254"
+  podLabels:
+    by: "muf"
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: "prometheus"

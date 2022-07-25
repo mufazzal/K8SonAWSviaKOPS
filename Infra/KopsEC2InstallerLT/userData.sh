@@ -4,9 +4,10 @@ scriptRoot="https://muf-k8s-kops-work-space-bucket.s3.amazonaws.com/Scripts"
 
 loadScript() {
     scriptName=$1
-    sudo curl -LO $scriptRoot/$scriptName
-    sudo chmod +x ./$scriptName
-    source ./$scriptName
+    scriptFileName=$(sed 's/\//-/g' <<<"$scriptName")
+    sudo curl -L $scriptRoot/$scriptName -o $scriptFileName
+    sudo chmod +x ./$scriptFileName
+    source ./$scriptFileName
 }
 
 init() {
@@ -34,27 +35,27 @@ process_install_cluster() {
 }
 
 process_install_ingressNginx() {
-    loadScript "install_nginxIngressController.sh"
+    loadScript "nginxIngContr/install_nginxIngressController.sh"
     lib_install_ingressNginx
 }
 
 process_configure_Kubernets_dashBoard() {
-    loadScript "setup_kubeDashboard.sh"
+    loadScript "kd/setup_kubeDashboard.sh"
     lib_setup_kubernets_dashBoard    
 }
 
 process_configure_argoCD_in_cluster() {
-    loadScript "install_argocd.sh"
+    loadScript "argocd/install_argocd.sh"
     lib_install_argoCD     
 }
 
 setUpPrometheousAndGrafana() {
-    loadScript "install_promeAndGrafa.sh"
+    loadScript "promeAndGrafa/install_promeAndGrafa.sh"
     lib_install_PrometheousAndGrafana
 }
 
 process_install_certMAnager () {
-    loadScript "install_certManager.sh"
+    loadScript "certManager/install_certManager.sh"
     lib_install_certMAnager
 }
 
@@ -65,7 +66,7 @@ process_install_andConfigure_dependencies () {
 }
 
 process_install_EFK() {    
-    loadScript "install_EFK.sh"
+    loadScript "efk/install_EFK.sh"
     lib_install_EFK    
 }
 

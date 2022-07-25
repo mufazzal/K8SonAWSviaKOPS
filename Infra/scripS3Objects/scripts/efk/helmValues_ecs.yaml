@@ -1,0 +1,27 @@
+replicas: 2
+minimumMasterNodes: 1
+
+labels: 
+  stack: EFK
+
+resources:
+  requests:
+    cpu: "1000m"
+    memory: "2Gi"
+  limits:
+    cpu: "1000m"
+    memory: "2Gi"
+
+rbac:
+  create: true
+
+
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.17/cluster-health.html#request-params wait_for_status
+# clusterHealthCheckParams: "wait_for_status=green&timeout=1s"
+
+tolerations:
+  - key: 'node-role.kubernetes.io/master'
+    operator: 'Exists'
+    effect: 'NoSchedule'
+
+

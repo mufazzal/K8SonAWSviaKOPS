@@ -1,0 +1,19 @@
+nameOverride: argocd
+fullnameOverride: ""
+
+controller:
+  name: argocd-application-controller
+  # -- Annotations to be added to application controller pods
+  podAnnotations:
+    prometheus.io/scrape: true
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8090"
+  podLabels:
+    by: "muf"
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: "prometheus"
