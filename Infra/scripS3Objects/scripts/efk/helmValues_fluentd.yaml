@@ -46,6 +46,14 @@ volumeMounts:
 #   - fluent-plugin-ec2-metadata
 #   - fluent-plugin-prometheus
 
+env:
+  - name: "FLUENTD_CONF"
+    value: "../../../etc/fluent/fluent.conf"
+  - name: FLUENT_ELASTICSEARCH_HOST
+    value: "elasticsearch-master"
+  - name: FLUENT_ELASTICSEARCH_PORT
+    value: "9200"
+
 metrics:
   serviceMonitor:
     enabled: true
@@ -80,34 +88,6 @@ fileConfigs:
       </parse>  
     </source>   
 
-
-    <source>
-      @type monitor_agent
-    </source>
-    <source>
-      @type forward
-    </source>
-    <source>
-      @type prometheus_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
-    <source>
-      @type prometheus_output_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
-    <source>
-      @type prometheus_tail_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
-
-
-
   02_filters.conf: |-
     <filter k8s.**>
       @type kubernetes_metadata
@@ -123,7 +103,6 @@ fileConfigs:
       </record>
     </filter>
 
-
     <filter k8s.var.log.containers.hello-node-deployment-.**>
       @type prometheus
       <metric>
@@ -138,43 +117,48 @@ fileConfigs:
 
   04_outputs.conf: |-
     <match k8s.var.log.containers.hello-node-deployment-**>
-      @type stdout
-    </match>
-    <match k8s.var.log.containers.hn-ms**>
-      @type stdout
-    </match>
+      @type elasticsearch
+      host "elasticsearch-master"
+      port 9200
+      path ""
+      user elastic
+      password changeme
+      ## index_name fluentd
 
-    <match k8s.var.log.containers.ingress-nginx-controller-**>
-      @type stdout
-    </match>    
-    <match k8s.var.log.containers.ingress-nginx-controller-**>
-      @type stdout
-    </match>    
-    <match k8s.var.log.containers.prometheus**>
-      @type stdout
-    </match>                
-
-    <match k8s.**>
-      @type s3
-
-      aws_key_id AKIAVU3ZOCQQOEJ5RM6E
-      aws_sec_key NoXy6yeivlJkv5sk84R1OFmDi1Lo8XCA594DAO+c
-      s3_bucket muf-k8s-kops-work-space-bucket
-      s3_region us-east-1
-      path logstream/fluentd/%Y/%m/%d/${tag}/
-      # if you want to use ${tag} or %Y/%m/%d/ like syntax in path / s3_object_key_format,
-      # need to specify tag for ${tag} and time for %Y/%m/%d in <buffer> argument.
+      logstash_format true
+      logstash_prefix hello-node
+      include_timestamp true 
+      compression_level best_compression
       <buffer tag,time>
         @type file
-        path /var/log/fluent/s3
-        timekey 3600 # 1 hour partition
-        timekey_wait 10m
+        path /var/log/fluent/ecs/hello-node
+        timekey 60
+        timekey_wait 120
         timekey_use_utc true # use utc
-        chunk_limit_size 256m
+        chunk_limit_size 10m
       </buffer>
-    </match>
 
-    <match **>
-      @type file
-      path /tmp/testlog
-    </match> 
+    </match>
+    <match k8s.var.log.containers.hn-ms**>
+      @type elasticsearch
+      host "elasticsearch-master"
+      port 9200
+      path ""
+      user elastic
+      password changeme
+      ## index_name fluentd
+
+      logstash_format true
+      logstash_prefix hn-ms
+      include_timestamp true 
+      compression_level best_compression
+      <buffer tag,time>
+        @type file
+        path /var/log/fluent/ecs/hn-ms
+        timekey 60
+        timekey_wait 120
+        timekey_use_utc true # use utc
+        chunk_limit_size 10m
+      </buffer>
+
+    </match>    

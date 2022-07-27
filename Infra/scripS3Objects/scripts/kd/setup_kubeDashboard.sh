@@ -17,7 +17,7 @@ lib_setup_kubernets_dashBoard() {
 
     echo "<<====  Saving Kubernetes Dashboard Token in SSM Parameter ====>>"
         ssmParamName="/mufawskops/dev/kd_token"
-        saToken=$(kubectl get serviceaccount jmutai-admin -n kubernetes-dashboard -o=jsonpath='{.secrets[0].name}' | xargs kubectl get secret -n kubernetes-dashboard -o jsonpath='{.data.token}' | base64 --decode)
+        saToken=$(kubectl get serviceaccount kd-admin -n kubernetes-dashboard -o=jsonpath='{.secrets[0].name}' | xargs kubectl get secret -n kubernetes-dashboard -o jsonpath='{.data.token}' | base64 --decode)
         aws ssm put-parameter \
             --name $ssmParamName\
             --type "String" \
