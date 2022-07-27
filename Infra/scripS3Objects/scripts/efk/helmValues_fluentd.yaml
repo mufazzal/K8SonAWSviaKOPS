@@ -129,16 +129,14 @@ fileConfigs:
       logstash_prefix hello-node
       include_timestamp true 
       compression_level best_compression
-      <buffer tag,time>
+      <buffer tag>
         @type file
         path /var/log/fluent/ecs/hello-node
-        timekey 60
-        timekey_wait 120
-        timekey_use_utc true # use utc
+        flush_interval 60
         chunk_limit_size 10m
       </buffer>
-
     </match>
+
     <match k8s.var.log.containers.hn-ms**>
       @type elasticsearch
       host "elasticsearch-master"
@@ -151,14 +149,41 @@ fileConfigs:
       logstash_format true
       logstash_prefix hn-ms
       include_timestamp true 
-      compression_level best_compression
-      <buffer tag,time>
+      compression_level best_compression 
+      <buffer tag>
         @type file
         path /var/log/fluent/ecs/hn-ms
-        timekey 60
-        timekey_wait 120
-        timekey_use_utc true # use utc
+        flush_interval 60
         chunk_limit_size 10m
       </buffer>
 
     </match>    
+
+    ##-------------------------------------------------
+
+    <match k8s.**>
+      @type copy
+
+      <store>
+        @type file
+        path /tmp/testlog      
+      </store>
+
+      <store>
+        @type s3
+        aws_key_id AKIAVU3ZOCQQOEJ5RM6E
+        aws_sec_key NoXy6yeivlJkv5sk84R1OFmDi1Lo8XCA594DAO+c
+        s3_bucket muf-k8s-kops-work-space-bucket
+        s3_region us-east-1
+        path logstream/fluentd/%Y/%m/%d/${tag}/
+        <buffer tag,time>
+          @type file
+          path /var/log/fluent/fulllog
+          timekey 3600 # 1 hour partition
+          timekey_wait 10m
+          timekey_use_utc true # use utc
+          chunk_limit_size 256m
+        </buffer>
+      </store>
+
+    </match>

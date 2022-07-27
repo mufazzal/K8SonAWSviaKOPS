@@ -7,9 +7,14 @@ lib_setup_kubernets_dashBoard() {
     # above line is commented out as k-d is npw part of argi pipeline
     
     # wait fror service account creation. better have the while loop  
-    
+
     helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-    helm install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+    helm repo update
+
+    sudo curl -LO $scriptRoot/kd/helmValues_kd.yaml
+
+    helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+    -f helmValues_kd.yaml \
     --wait --timeout 5m \
     -n kubernetes-dashboard --create-namespace
 

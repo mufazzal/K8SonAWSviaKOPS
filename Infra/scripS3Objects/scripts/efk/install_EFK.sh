@@ -27,12 +27,22 @@ lib_install_elasticSearch() {
     helm repo update
 
     sudo curl -LO $scriptRoot/efk/helmValues_ecs.yaml
-
     helm upgrade --install elasticsearch elastic/elasticsearch \
     -n efk --create-namespace \
     -f helmValues_ecs.yaml \
     --wait --timeout 5m \
     --version 7.13.0
+
+    echo "---Installing elasticsearch stat exporter for prometheous ---"
+
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo update
+
+    sudo curl -LO $scriptRoot/efk/helmValues_ecs_state_expo.yaml
+    helm upgrade --install ecs-stat-exporter prometheus-community/prometheus-elasticsearch-exporter \
+    -n efk --create-namespace \
+    -f helmValues_ecs_state_expo.yaml    
+
 }
 
 
