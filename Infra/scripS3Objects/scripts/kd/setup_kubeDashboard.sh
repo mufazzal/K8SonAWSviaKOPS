@@ -20,6 +20,11 @@ lib_setup_kubernets_dashBoard() {
 
     sleep 30s
 
+    kubectl create \
+        -n kubernetes-dashboard \
+        -f https://raw.githubusercontent.com/mufazzal/HelloNodeAutomation/master/Deployment/dev/k8sClusterDepAWSKOPS/modules/kd/kubernetes-dashboard-admin-role-binding.yaml
+
+
     echo "<<====  Saving Kubernetes Dashboard Token in SSM Parameter ====>>"
         ssmParamName="/mufawskops/dev/kd_token"
         saToken=$(kubectl get serviceaccount kd-admin -n kubernetes-dashboard -o=jsonpath='{.secrets[0].name}' | xargs kubectl get secret -n kubernetes-dashboard -o jsonpath='{.data.token}' | base64 --decode)

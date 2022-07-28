@@ -171,8 +171,8 @@ fileConfigs:
 
       <store>
         @type s3
-        aws_key_id AKIAVU3ZOCQQOEJ5RM6E
-        aws_sec_key NoXy6yeivlJkv5sk84R1OFmDi1Lo8XCA594DAO+c
+        aws_key_id <<---AWS_ACCESS_KEY--->>
+        aws_sec_key <<---AWS_SECRET--->>
         s3_bucket muf-k8s-kops-work-space-bucket
         s3_region us-east-1
         path logstream/fluentd/%Y/%m/%d/${tag}/

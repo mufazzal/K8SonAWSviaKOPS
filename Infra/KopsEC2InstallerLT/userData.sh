@@ -70,7 +70,13 @@ process_install_EFK() {
     lib_install_EFK    
 }
 
+process_install_istio() {    
+    loadScript "istio/install_istio.sh"
+    lib_install_istio    
+}
+
 process_configure() {
+    loadScript "install_cluster.sh"
     lib_confugure_kubectlClient
 }
 
@@ -82,6 +88,8 @@ doHPAbadFix() {
     kubectl apply -f /root/hpaBadFix/pod-autoscalling.yaml
     echo "<<====== DONE BAD FIX! BAD fix! BAD fix! for HPA  ======>>"
 }
+
+
 
 echo '<<======Starting User data Script userData.sh======>>'
 
