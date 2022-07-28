@@ -51,6 +51,10 @@ lib_install_fluentd() {
     helm repo update
 
     sudo curl -LO $scriptRoot/efk/helmValues_fluentd.yaml
+    awsCredContent=$(sudo curl $scriptRoot/efk/awscred)
+    IFS=: read -r aws_access_key aws_secret <<< "$awsCredContent"
+    sed -i -e "s/<<---AWS_ACCESS_KEY--->>/$aws_access_key/g" helmValues_fluentd.yaml
+    sed -i -e "s/<<---AWS_SECRET--->>/$aws_secret/g" helmValues_fluentd.yaml
 
     helm upgrade --install fluentd fluent/fluentd \
     -n efk --create-namespace \

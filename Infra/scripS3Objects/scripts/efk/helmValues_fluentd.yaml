@@ -116,6 +116,10 @@ fileConfigs:
     ##
 
   04_outputs.conf: |-
+    <match k8s.**>
+      @type stdout
+    </match>
+  
     <match k8s.var.log.containers.hello-node-deployment-**>
       @type elasticsearch
       host "elasticsearch-master"
