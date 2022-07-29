@@ -119,51 +119,6 @@ fileConfigs:
     <match k8s.**>
       @type stdout
     </match>
-  
-    <match k8s.var.log.containers.hello-node-deployment-**>
-      @type elasticsearch
-      host "elasticsearch-master"
-      port 9200
-      path ""
-      user elastic
-      password changeme
-      ## index_name fluentd
-
-      logstash_format true
-      logstash_prefix hello-node
-      include_timestamp true 
-      compression_level best_compression
-      <buffer tag>
-        @type file
-        path /var/log/fluent/ecs/hello-node
-        flush_interval 60
-        chunk_limit_size 10m
-      </buffer>
-    </match>
-
-    <match k8s.var.log.containers.hn-ms**>
-      @type elasticsearch
-      host "elasticsearch-master"
-      port 9200
-      path ""
-      user elastic
-      password changeme
-      ## index_name fluentd
-
-      logstash_format true
-      logstash_prefix hn-ms
-      include_timestamp true 
-      compression_level best_compression 
-      <buffer tag>
-        @type file
-        path /var/log/fluent/ecs/hn-ms
-        flush_interval 60
-        chunk_limit_size 10m
-      </buffer>
-
-    </match>    
-
-    ##-------------------------------------------------
 
     <match k8s.**>
       @type copy
@@ -175,16 +130,16 @@ fileConfigs:
 
       <store>
         @type s3
-        aws_key_id <<---AWS_ACCESS_KEY--->>
-        aws_sec_key <<---AWS_SECRET--->>
+        aws_key_id AKIAVU3ZOCQQNEBQ5HKG
+        aws_sec_key fHEtUBJk0gVuJKVziiEzYsJG3gTU1L5qGKbMrAJo
         s3_bucket muf-k8s-kops-work-space-bucket
         s3_region us-east-1
         path logstream/fluentd/%Y/%m/%d/${tag}/
         <buffer tag,time>
           @type file
           path /var/log/fluent/fulllog
-          timekey 3600 # 1 hour partition
-          timekey_wait 10m
+          timekey 120 # 1 hour partition
+          timekey_wait 10
           timekey_use_utc true # use utc
           chunk_limit_size 256m
         </buffer>

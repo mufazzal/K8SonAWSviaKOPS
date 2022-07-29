@@ -2,10 +2,11 @@
 
 source ./common.sh
 
-
 lib_install_EFK() {
-    lib_install_fluentd
+    # lib_install_fluentd
     lib_install_elasticSearch
+    lib_install_logstash
+    lib_install_filebeat
     lib_install_kibana
 }
 
@@ -45,16 +46,38 @@ lib_install_elasticSearch() {
 
 }
 
+lib_install_filebeat() {
+    helm repo add elastic https://helm.elastic.co
+    helm repo update
+
+    sudo curl -LO $scriptRoot/efk/helmValues_filebeat.yaml
+    helm upgrade --install elk-filebeat elastic/filebeat  \
+    -n efk --create-namespace \
+    --wait --timeout 5m \
+    -f helmValues_filebeat.yaml
+}
+
+lib_install_logstash() {
+    helm repo add elastic https://helm.elastic.co
+    helm repo update
+
+    sudo curl -LO $scriptRoot/efk/helmValues_logstash.yaml
+    helm upgrade --install elk-logstash elastic/logstash \
+    -n efk --create-namespace \
+    --wait --timeout 5m \
+    -f helmValues_logstash.yaml
+}
+
 
 lib_install_fluentd() {
     helm repo add fluent https://fluent.github.io/helm-charts
     helm repo update
 
     sudo curl -LO $scriptRoot/efk/helmValues_fluentd.yaml
-    awsCredContent=$(sudo curl $scriptRoot/efk/awscred)
-    IFS=: read -r aws_access_key aws_secret <<< "$awsCredContent"
-    sed -i -e "s/<<---AWS_ACCESS_KEY--->>/$aws_access_key/g" helmValues_fluentd.yaml
-    sed -i -e "s/<<---AWS_SECRET--->>/$aws_secret/g" helmValues_fluentd.yaml
+    # awsCredContent=$(sudo curl $scriptRoot/efk/awscred)
+    # IFS=: read -r aws_access_key aws_secret <<< "$awsCredContent"
+    # sed -i -e "s/<<---AWS_ACCESS_KEY--->>/$aws_access_key/g" helmValues_fluentd.yaml
+    # sed -i -e "s/<<---AWS_SECRET--->>/$aws_secret/g" helmValues_fluentd.yaml
 
     helm upgrade --install fluentd fluent/fluentd \
     -n efk --create-namespace \

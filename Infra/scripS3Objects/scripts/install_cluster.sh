@@ -33,7 +33,7 @@ lib_install_cluster() {
         --ssh-access="0.0.0.0/0" \
         --dns-zone=k8shn.com \
         --dns private \
-        --node-count=2 \
+        --node-count=3 \
         --node-size=t2.medium \
         --master-size=t2.medium \
         --master-volume-size="16" \

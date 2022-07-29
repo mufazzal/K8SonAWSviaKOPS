@@ -73,6 +73,9 @@ process_install_EFK() {
 process_install_istio() {    
     loadScript "istio/install_istio.sh"
     lib_install_istio    
+
+    lib_confugure_istio_helloNode
+    lib_confugure_istio_hn_ms
 }
 
 process_configure() {
