@@ -130,6 +130,9 @@ else
     setProgressInfoTag "Cert Manager Configured | Configuring EFK stack"
     process_install_EFK
 
+    setProgressInfoTag "EFK Configured | Configuring istio"
+    process_install_istio
+
     doHPAbadFix
 
     lib_setupCronForDeleteCluster    
