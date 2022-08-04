@@ -1,0 +1,53 @@
+name: K8sKops_ReqiredDependencies
+schemaVersion: 1.0
+phases:
+  - name: Initialize
+    steps:
+      - name: UpdateOS
+        action: ExecuteBash
+        inputs:
+          commands:
+            - sudo yum update -y
+  - name: build
+    steps:
+      - name: FetchScriptsToRun
+        action: ExecuteBash
+        inputs:
+          commands:
+            - sudo curl -L https://muf-k8s-kops-work-space-bucket.s3.amazonaws.com/Scripts/k8sKopsEC2ImageBuilder/script.sh -o script.sh
+      - name: RunFetchScriptsToRun
+        action: ExecuteBash
+        inputs:
+          commands:
+            - sudo chmod +x ./script.sh
+            - source ./script.sh
+
+  # - name: validate
+  #   steps:
+  #     - name: ValidateWebServer
+  #       action: ExecuteBash
+  #       inputs:
+  #         commands:
+  #           - |
+  #             CUR_STATE=$(sudo systemctl is-active httpd)
+  #             if [[ $CUR_STATE == "active" ]]; then
+  #                 echo "Httpd service is active."
+  #                 exit 0
+  #             else
+  #                 echo "Httpd service is not active."
+  #                 exit 1
+  #             fi
+  #     - name: TestWebServer
+  #       action: ExecuteBash
+  #       inputs:
+  #         commands:
+  #           - |
+  #             OUTPUT=$(curl -s localhost)
+  #             if [[ $OUTPUT == "hello world v1" ]]; then
+  #                 echo "Webserver is working fine"
+  #                 exit 0
+  #             else
+  #                 echo "Webserver not working fine"
+  #                 exit 0
+  #             fi
+

@@ -4,8 +4,12 @@ controller:
   podAnnotations:
     prometheus.io/scrape: true
     prometheus.io/port: "10254"
+    traffic.sidecar.istio.io/excludeInboundPorts: 80,443
+    traffic.sidecar.istio.io/includeInboundPorts: ""  
   podLabels:
     by: "muf"
+    app: "nginx-ingress"
+    version: "1.0.0"
 
   metrics:
     enabled: true

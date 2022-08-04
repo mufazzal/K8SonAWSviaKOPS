@@ -33,7 +33,7 @@ lib_install_cluster() {
         --ssh-access="0.0.0.0/0" \
         --dns-zone=k8shn.com \
         --dns private \
-        --node-count=3 \
+        --node-count=5 \
         --node-size=t2.medium \
         --master-size=t2.medium \
         --master-volume-size="16" \
@@ -91,6 +91,10 @@ lib_wiatForClusterReadyLoop() {
             sleep 30
         fi
     done
+}
+
+lib_confugure_intialClusterResources() {
+    kubectl apply -f https://raw.githubusercontent.com/mufazzal/HelloNodeAutomation/master/Deployment/dev/k8sClusterDepAWSKOPS/modules/intialClusterResources/pre_conf_namespaces.yaml
 }
 
 lib_confugure_kubectlClient() {

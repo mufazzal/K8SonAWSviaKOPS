@@ -114,6 +114,7 @@ else
     lib_wiatForClusterReadyLoop
     setProgressInfoTag "Cluster ready | Post Configuring Cluter"
     process_configure
+    lib_confugure_intialClusterResources
 
     setProgressInfoTag "Post Configuring Cluster | Configuring Prometheus and Grafana"
     setUpPrometheousAndGrafana

@@ -29,16 +29,16 @@ lib_install_istio () {
     kubectl apply -n istio-system -f https://raw.githubusercontent.com/istio/istio/release-1.14/samples/addons/prometheus.yaml    
 }   
 
-lib_confugure_istio_helloNode() {
-    kubectl label namespace hello-node istio-injection=enabled
-    kubectl delete all --all -n hello-node
-}
+# lib_confugure_istio_helloNode() {
+#     kubectl label namespace hello-node istio-injection=enabled
+#     kubectl delete pod --all -n hello-node
+# }
 
-lib_confugure_istio_hn_ms() {
-    kubectl label namespace hn-ms1 istio-injection=enabled
-    kubectl delete pod --all -n hn-ms1
-    kubectl label namespace hn-ms2 istio-injection=enabled
-    kubectl delete pod --all -n hn-ms2
-    kubectl label namespace hn-ms3 istio-injection=enabled
-    kubectl delete pod --all -n hn-ms3
-}
+# lib_confugure_istio_hn_ms() {
+#     kubectl label namespace hn-ms1 istio-injection=enabled
+#     kubectl delete pod --all -n hn-ms1
+#     kubectl label namespace hn-ms2 istio-injection=enabled
+#     kubectl delete pod --all -n hn-ms2
+#     kubectl label namespace hn-ms3 istio-injection=enabled
+#     kubectl delete pod --all -n hn-ms3
+# }
