@@ -1,0 +1,13 @@
+- name: "Checking if Required Services are running on all machine"
+  hosts: all_k8s_machines  
+
+  tasks:
+  - name: Populate service facts
+    service_facts:
+    register: services_state
+  - debug:
+      #var: services_state.ansible_facts.services['containerd.service']
+      msg:
+        - "Containerd: {{ services_state.ansible_facts.services['containerd.service'].state }}"
+        - "Kubelet: {{ services_state.ansible_facts.services['kubelet.service'].state }}"
+    #when: "'docker' in services"

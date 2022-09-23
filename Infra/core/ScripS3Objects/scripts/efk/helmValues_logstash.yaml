@@ -1,0 +1,50 @@
+persistence:
+  enabled: true
+
+logstashConfig:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    xpack.monitoring.enabled: false
+
+logstashPipeline: 
+ logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    
+    output {
+      elasticsearch {
+        hosts => "http://elasticsearch-master.efk.svc.cluster.local:9200"
+        manage_template => false
+        index => "index-%{[fields][logStram__________Type]}-%{+YYYY.MM.dd}" 
+        document_type => "%{[@metadata][type]}"
+      }
+    } 
+# s3 {
+#   access_key_id => "AKIAVU3ZOCQQNEBQ5HKG"             
+#   secret_access_key => "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" 
+#   region => "us-east-1"                    
+#   bucket => "muf-k8s-kops-work-space-bucket"   
+#   prefix => "logstream/fluentd/%Y/%m/%d/"               
+#   size_file => 2048                         
+#   time_file => 5                            
+#   codec => "plain"                         
+#   canned_acl => "private"                  
+# } 
+service:
+  type: ClusterIP
+  ports:
+    - name: beats
+      port: 5044
+      protocol: TCP
+      targetPort: 5044
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+
+#----------
+
+

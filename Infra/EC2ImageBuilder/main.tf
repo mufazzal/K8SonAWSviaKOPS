@@ -5,8 +5,8 @@ module "K8sKopsPlatformEC2Image" {
   pipelineName = var.pipelineName
   sshKeyName = var.sshKeyName
 
-  vpc_id  = module.dataMatrix.ds.kopsk8shnNetwork.outputs.vpc_id
-  subnet_id = module.dataMatrix.ds.kopsk8shnNetwork.outputs.maintSubnets[0]
+  vpc_id  = "vpc-021158bf62c6b829c"
+  subnet_id = "subnet-09b920002344cc235"
 
   logBucketName = var.logBucketName
   logBucketPrefix = var.logBucketPrefix

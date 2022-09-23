@@ -10,8 +10,11 @@ doCommonConfig() {
     echo 'alias udlogf="tail -f /var/log/cloud-init-output.log"' >>~/.bashrc  
     export KOPS_STATE_STORE=$state_bucket
     export KOPS_CLUSTER_NAME=$cluster_name    
+    export scriptRoot=$scriptRoot    
+    
     echo "export KOPS_STATE_STORE=$state_bucket" >> ~/.bashrc 
     echo "export KOPS_CLUSTER_NAME=$cluster_name" >> ~/.bashrc     
+    echo "export scriptRoot=$scriptRoot" >> ~/.bashrc 
 }
 
 setEc2Tag() {

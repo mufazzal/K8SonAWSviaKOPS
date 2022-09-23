@@ -1,0 +1,6 @@
+- name: "Pinging to all k8s machine"
+  hosts: all_k8s_machines  
+
+  tasks:
+    - name: ping task
+      ping:

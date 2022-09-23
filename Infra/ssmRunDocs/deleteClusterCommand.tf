@@ -12,8 +12,9 @@ mainSteps:
 - action: aws:runShellScript
   name: script_0
   inputs:
-    timeoutSeconds: '60'
+    timeoutSeconds: '1800'
     runCommand:
     - kops delete cluster --name=hn.k8shn.com --state s3://muf-k8s-kops-state-bucket --yes
+    - sudo shutdown -h now
 DOC
 }

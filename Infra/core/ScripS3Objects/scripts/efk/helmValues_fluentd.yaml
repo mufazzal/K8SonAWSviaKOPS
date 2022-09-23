@@ -1,0 +1,148 @@
+# nameOverride: ""
+# fullnameOverride: ""
+
+kind: "DaemonSet"
+
+serviceAccount:
+  create: true
+
+image:
+  repository: "mufazzal/hellonode-fluentd"
+  tag: "v1"
+    
+rbac:
+  create: true
+
+volumes:
+- name: varlog
+  hostPath:
+    path: /var/log
+- name: varlibdockercontainers
+  hostPath:
+    path: /var/lib/docker/containers
+- name: etcfluentd-main
+  configMap:
+    name: fluentd-main
+    defaultMode: 0777
+- name: etcfluentd-config
+  configMap:
+    name: fluentd-config
+    defaultMode: 0777
+
+volumeMounts:
+- name: varlog
+  mountPath: /var/log
+- name: varlibdockercontainers
+  mountPath: /var/lib/docker/containers
+  readOnly: true
+- name: etcfluentd-main
+  mountPath: /etc/fluent
+- name: etcfluentd-config
+  mountPath: /etc/fluent/config.d/
+
+
+# plugins:
+#   - fluent-plugin-s3
+#   - fluent-plugin-ec2-metadata
+#   - fluent-plugin-prometheus
+
+env:
+  - name: "FLUENTD_CONF"
+    value: "../../../etc/fluent/fluent.conf"
+  - name: FLUENT_ELASTICSEARCH_HOST
+    value: "elasticsearch-master"
+  - name: FLUENT_ELASTICSEARCH_PORT
+    value: "9200"
+
+metrics:
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: "prometheus"
+    # namespace: "prometheus"
+
+# configMapConfigs:
+#   - fluentd-prometheus-conf
+#   - fluentd-systemd-conf
+
+# dashboards:
+#   enabled: "true"
+#   namespace: ""
+#   labels:
+#     grafana_dashboard: '"1"'
+
+fileConfigs:
+  01_sources.conf: |-
+    <source>
+      @type tail
+      @id all_k8s_log
+      path /var/log/containers/*.log
+      exclude_path ["/var/log/containers/*fluentd*.log"]
+      pos_file /var/log/positionIndexing.log.pos
+      tag k8s.*
+      read_from_head true
+      <parse>
+        @type regexp
+        expression /^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<flags>[^ ]+) (?<log____message>.*)$/
+        time_format %Y-%m-%dT%H:%M:%S.%N%:z
+      </parse>  
+    </source>   
+
+  02_filters.conf: |-
+    <filter k8s.**>
+      @type kubernetes_metadata
+      skip_container_metadata "true"
+    </filter> 
+    <filter k8s.**>
+      @type record_transformer
+      remove_keys flags
+      <record>
+        fluentd_hostname ${hostname}
+        fluentd_tag ${tag}
+        just_for_fun muuuuffffaaaazzzzzzzaaalllll
+      </record>
+    </filter>
+
+    <filter k8s.var.log.containers.hello-node-deployment-.**>
+      @type prometheus
+      <metric>
+        name hello_node_log_counter
+        type counter
+        desc The total number of 'hello_node' app logs.
+      </metric>
+    </filter>
+
+  03_dispatch.conf: |-
+    ##
+
+  04_outputs.conf: |-
+    <match k8s.**>
+      @type stdout
+    </match>
+
+    <match k8s.**>
+      @type copy
+
+      <store>
+        @type file
+        path /tmp/testlog      
+      </store>
+
+      <store>
+        @type s3
+        aws_key_id AKIAVU3ZOCQQNEBQ5HKG
+        aws_sec_key fHEtUBJk0gVuJKVziiEzYsJG3gTU1L5qGKbMrAJo
+        s3_bucket muf-k8s-kops-work-space-bucket
+        s3_region us-east-1
+        path logstream/fluentd/%Y/%m/%d/${tag}/
+        <buffer tag,time>
+          @type file
+          path /var/log/fluent/fulllog
+          timekey 120 # 1 hour partition
+          timekey_wait 10
+          timekey_use_utc true # use utc
+          chunk_limit_size 256m
+        </buffer>
+      </store>
+
+    </match>

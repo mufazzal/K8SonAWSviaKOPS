@@ -50,6 +50,11 @@ output "launchTemplate_arn" {
   value       = aws_launch_template.launchTemplate.arn
 }
 
+output "launchTemplate_name" {
+  description = "ID of the VPC"
+  value       = "${var.namePrefix}-${var.launchTemplateName}"
+}
+
 output "launchTemplate_id" {
   description = "ID of the VPC"
   value       = aws_launch_template.launchTemplate.id

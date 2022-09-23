@@ -23,7 +23,8 @@ init() {
         curl \
         awscli \
         bash-completion \
-        yq
+        yq \
+        jq
 
     setUDScriptRuningStatusTag "in_progress"
     setEc2Tag "Name" "K8S_INSTALLER-${cluster_name}"
@@ -83,6 +84,11 @@ process_configure() {
     lib_confugure_kubectlClient
 }
 
+process_install_ansible() {    
+    loadScript "ansible/install_ansible.sh"
+    lib_install_ansible
+}
+
 doHPAbadFix() {
     echo "<<====== BAD FIX! BAD fix! BAD fix! for HPA AS argo CD do not recognise HPA object ======>>"
     sleep 30s
@@ -123,23 +129,26 @@ else
     process_install_ingressNginx
 
     setProgressInfoTag "ingress-nginx Configured| Configuring ArgoCD"
-    process_configure_argoCD_in_cluster
+#    process_configure_argoCD_in_cluster
 
     setProgressInfoTag "ArgoCD Configured | Configuring Kubernets-dashBoard"
-    process_configure_Kubernets_dashBoard
+#    process_configure_Kubernets_dashBoard
 
     setProgressInfoTag "Kubernets-dashBoard Configured | Configuring Cert Manager"
-    process_install_certMAnager
+#    process_install_certMAnager
     
     setProgressInfoTag "Cert Manager Configured | Configuring EFK stack"
-    process_install_EFK
+#    process_install_EFK
 
     setProgressInfoTag "EFK Configured | Configuring istio"
-    process_install_istio
+#    process_install_istio
 
-    doHPAbadFix
+    setProgressInfoTag "Istio Configured | Configuring Ansible"
+#    process_install_ansible
 
-    lib_setupCronForDeleteCluster    
+#    doHPAbadFix
+
+#    lib_setupCronForDeleteCluster    
   
 fi
 

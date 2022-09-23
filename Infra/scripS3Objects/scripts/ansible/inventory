@@ -1,0 +1,16 @@
+master-node-1 ansible_host=54.197.134.247
+
+worker-node-1 ansible_host=54.211.108.108
+worker-node-2 ansible_host=52.55.94.215
+
+installer-node ansible_host=54.224.176.119
+
+[all_k8s_machines]
+master-node-1
+worker-node-1
+worker-node-2
+
+[all_k8s_machines:vars]
+ansible_connection=ssh
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/id_rsa

@@ -5,8 +5,8 @@ module "EFS_K8s_Logs" {
   sg_ingress_rules = var.sg_ingress_rules
   sg_egress_rules = var.sg_egress_rules
 
-  vpc_id  = module.dataMatrix.ds.kopsk8shnNetwork.outputs.vpc_id
-  mtHostingSubnets = module.dataMatrix.ds.kopsk8shnNetwork.outputs.maintSubnets
+  vpc_id  = "vpc-021158bf62c6b829c"
+  mtHostingSubnets = ["subnet-09b920002344cc235"]
 }
 
 module "dataMatrix" {
